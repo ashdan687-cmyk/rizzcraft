@@ -19,7 +19,7 @@ export default function BottomTabs() {
       left: '50%',
       transform: 'translateX(-50%)',
       width: '100%',
-      maxWidth: 390,
+      maxWidth: 640,
       height: 64,
       background: 'var(--bg2)',
       borderTop: '1px solid var(--border-light)',

@@ -1,7 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
+
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
+}
 
 export default function SignInPage() {
   const [email, setEmail] = useState('')
@@ -9,27 +13,31 @@ export default function SignInPage() {
   const [sent, setSent] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const emailValid = useMemo(() => isValidEmail(email), [email])
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (!emailValid) return
     setLoading(true)
     setError(null)
 
     const supabase = createClient()
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/sign-in/callback`,
-      },
-    })
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/sign-in/callback`,
+        },
+      })
 
-    if (error) {
-      setError(error.message)
+      if (error) throw error
+
+      setSent(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
+    } finally {
       setLoading(false)
-      return
     }
-
-    setSent(true)
-    setLoading(false)
   }
 
   return (
@@ -139,10 +147,10 @@ export default function SignInPage() {
 
               <button
                 type="submit"
-                disabled={loading || !email}
+                disabled={!emailValid}
                 style={{
                   width: '100%',
-                  background: loading || !email ? 'var(--amber-dim)' : 'var(--amber)',
+                  background: 'var(--amber)',
                   color: 'var(--bg)',
                   border: 'none',
                   borderRadius: '6px',
@@ -150,8 +158,9 @@ export default function SignInPage() {
                   fontSize: '0.95rem',
                   fontWeight: 500,
                   fontFamily: 'inherit',
-                  cursor: loading || !email ? 'not-allowed' : 'pointer',
-                  transition: 'background 0.2s',
+                  cursor: emailValid ? 'pointer' : 'not-allowed',
+                  opacity: emailValid ? 1 : 0.65,
+                  transition: 'opacity 0.2s',
                 }}
               >
                 {loading ? 'Sending…' : 'Send me a magic link'}

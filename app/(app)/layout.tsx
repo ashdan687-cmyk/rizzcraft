@@ -3,8 +3,10 @@ import BottomTabs from '@/app/components/BottomTabs'
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
-      maxWidth: 390,
-      margin: '0 auto',
+      width: '100%',
+      maxWidth: 640,
+      marginLeft: 'auto',
+      marginRight: 'auto',
       minHeight: '100vh',
       position: 'relative',
       background: 'var(--bg)',

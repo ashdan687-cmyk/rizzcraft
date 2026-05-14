@@ -367,7 +367,7 @@ export default function NewConversationSheet({
       <div style={{
         position: 'fixed', bottom: 64, left: '50%',
         transform: `translateX(-50%) translateY(${isOpen ? '0' : '105%'})`,
-        width: '100%', maxWidth: 390,
+        width: '100%', maxWidth: 640,
         maxHeight: 'calc(100dvh - 64px)',
         background: 'var(--bg2)',
         border: '1px solid var(--border-light)',
