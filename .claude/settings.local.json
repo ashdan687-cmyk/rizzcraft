@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pkill -f \"next dev\")",
+      "Bash(npm run *)",
+      "Bash(lsof -ti:3000)",
+      "Bash(xargs kill -9)",
+      "Bash(curl -s -X POST http://localhost:3000/api/generate -H 'Content-Type: application/json' -d '{\"messages\":[{\"sender\":\"them\",\"content\":\"hey\",\"order_index\":1}],\"goal\":\"reply\",\"tone\":\"casual\"}')",
+      "Bash(curl -s http://localhost:3000/sign-in)",
+      "Bash(curl -s -I http://localhost:3000/home)",
+      "Bash(curl -s -X POST http://localhost:3000/api/generate -H 'Content-Type: application/json' -d '{ *)",
+      "Bash(curl -s http://localhost:3000/api/generate -X GET)",
+      "Bash(npx next *)",
+      "Bash(npx tsc *)"
+    ]
+  }
+}

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RizzCraft — Onboarding Flow</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0d0c0b; --bg2: #141210; --bg3: #1c1a17; --bg4: #232017;
+  --cream: #f0ead8; --cream-dim: #a89e87; --cream-faint: #5a5347;
+  --amber: #d49c43; --amber-light: #ecbb6e; --amber-dim: #7a5520; --amber-faint: #3d2a10;
+  --border-light: rgba(240,234,216,0.08); --border-amber: rgba(212,156,67,0.2);
+  --green: #4caf79;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'DM Sans', system-ui, sans-serif;
+}
+body { background: var(--bg); font-family: var(--sans); -webkit-font-smoothing: antialiased; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem 3rem; color: var(--cream); }
+.stage-title { font-family: var(--serif); font-size: 1.4rem; font-weight: 500; color: var(--cream); margin-bottom: 0.2rem; text-align: center; }
+.stage-sub { font-size: 0.8rem; color: var(--cream-dim); font-weight: 300; text-align: center; margin-bottom: 1.5rem; }
+.progress-bar { display: flex; gap: 5px; width: 320px; margin-bottom: 1.5rem; }
+.pdot { height: 3px; border-radius: 2px; background: var(--border-light); flex: 1; transition: background 0.3s; }
+.pdot.active { background: var(--amber); }
+.pdot.done { background: var(--amber-dim); }
+.phone { width: 320px; background: var(--bg2); border: 1px solid var(--border-light); border-radius: 36px; overflow: hidden; min-height: 590px; display: flex; flex-direction: column; }
+.notch-row { display: flex; justify-content: center; padding: 14px 0 8px; }
+.notch { width: 80px; height: 6px; background: var(--bg3); border-radius: 3px; }
+.screen { flex: 1; padding: 1.25rem 1.25rem 1.5rem; display: none; flex-direction: column; }
+.screen.active { display: flex; animation: sIn 0.28s ease; }
+.screen.back { animation: sBack 0.28s ease; }
+@keyframes sIn   { from { opacity:0; transform:translateX(14px); } to { opacity:1; transform:translateX(0); } }
+@keyframes sBack { from { opacity:0; transform:translateX(-14px); } to { opacity:1; transform:translateX(0); } }
+
+.eyebrow { font-size: 0.62rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber); margin-bottom: 0.7rem; }
+.heading { font-family: var(--serif); font-size: 1.45rem; font-weight: 500; line-height: 1.15; margin-bottom: 0.45rem; }
+.heading em { font-style: italic; color: var(--amber); }
+.body-text { font-size: 0.8rem; color: var(--cream-dim); font-weight: 300; line-height: 1.6; margin-bottom: 1.1rem; }
+
+.opt { background: var(--bg3); border: 1px solid var(--border-light); border-radius: 10px; padding: 0.85rem 1rem; cursor: pointer; display: flex; align-items: center; gap: 10px; margin-bottom: 7px; transition: border-color 0.2s, background 0.2s; }
+.opt:hover { border-color: var(--amber-dim); background: var(--bg4); }
+.opt.sel { border-color: var(--amber); background: var(--amber-faint); }
+.opt-ic { width: 28px; height: 28px; border-radius: 6px; background: var(--bg4); border: 1px solid var(--border-amber); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; color: var(--amber-dim); }
+.opt-lbl { font-size: 0.84rem; font-weight: 500; color: var(--cream); }
+.opt-sub { font-size: 0.7rem; color: var(--cream-dim); font-weight: 300; margin-top: 1px; }
+
+.tone-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.tchip { background: var(--bg3); border: 1px solid var(--border-light); border-radius: 10px; padding: 0.8rem 0.75rem; cursor: pointer; text-align: center; transition: border-color 0.2s, background 0.2s; }
+.tchip:hover { border-color: var(--amber-dim); background: var(--bg4); }
+.tchip.sel { border-color: var(--amber); background: var(--amber-faint); }
+.tchip-name { font-size: 0.82rem; font-weight: 500; color: var(--cream); }
+.tchip-desc { font-size: 0.67rem; color: var(--cream-dim); font-weight: 300; margin-top: 2px; line-height: 1.3; }
+
+.mock-input { background: var(--bg3); border: 1px solid var(--border-light); border-radius: 10px; padding: 0.8rem 1rem; font-size: 0.78rem; color: var(--cream-dim); font-family: var(--sans); font-weight: 300; line-height: 1.55; margin-bottom: 8px; }
+.inp-label { font-size: 0.67rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cream-faint); margin-bottom: 4px; }
+.upload-zone { border: 1px dashed var(--border-amber); border-radius: 10px; padding: 1.5rem 1rem; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; margin-bottom: 8px; }
+.upload-zone:hover { border-color: var(--amber); background: var(--amber-faint); }
+.upload-txt { font-size: 0.8rem; color: var(--cream-dim); font-weight: 300; }
+.upload-sub { font-size: 0.68rem; color: var(--cream-faint); margin-top: 3px; }
+.or-div { display: flex; align-items: center; gap: 8px; margin: 5px 0; }
+.or-div::before, .or-div::after { content:''; flex:1; height:1px; background:var(--border-light); }
+.or-div span { font-size: 0.68rem; color: var(--cream-faint); }
+
+.reply-card { background: var(--bg3); border: 1px solid var(--border-light); border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 7px; cursor: pointer; position: relative; transition: border-color 0.2s; }
+.reply-card:hover { border-color: var(--amber-dim); }
+.reply-card.top { border-color: var(--amber); }
+.reply-badge { position: absolute; top: -1px; right: 10px; font-size: 0.6rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--bg); background: var(--amber); padding: 2px 8px; border-radius: 0 0 5px 5px; }
+.reply-txt { font-size: 0.8rem; color: var(--cream); line-height: 1.5; margin-bottom: 5px; }
+.reply-meta { display: flex; gap: 6px; align-items: center; }
+.rtag { font-size: 0.62rem; font-weight: 500; color: var(--amber-dim); background: var(--amber-faint); padding: 2px 7px; border-radius: 4px; }
+.rcopy { font-size: 0.62rem; color: var(--cream-faint); margin-left: auto; cursor: pointer; }
+.rcopy:hover { color: var(--cream-dim); }
+.vibe-bar { background: rgba(76,175,121,0.09); border: 1px solid rgba(76,175,121,0.22); border-radius: 8px; padding: 0.6rem 0.85rem; display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+.vdot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+.vtext { font-size: 0.73rem; color: var(--cream-dim); font-weight: 300; line-height: 1.4; }
+.vtext strong { color: var(--cream); font-weight: 500; }
+.refine-row { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
+.refine-btn { flex: 1; min-width: 70px; background: var(--bg3); border: 1px solid var(--border-light); border-radius: 7px; padding: 0.45rem; font-family: var(--sans); font-size: 0.7rem; color: var(--cream-dim); cursor: pointer; transition: border-color 0.18s; }
+.refine-btn:hover { border-color: var(--cream-faint); color: var(--cream); }
+
+.btn-main { width: 100%; background: var(--amber); color: var(--bg); border: none; border-radius: 10px; padding: 0.82rem; font-family: var(--sans); font-size: 0.88rem; font-weight: 500; cursor: pointer; margin-top: auto; transition: background 0.2s; }
+.btn-main:hover { background: var(--amber-light); }
+.btn-main:disabled { background: var(--bg3); color: var(--cream-faint); cursor: not-allowed; }
+.btn-sec { width: 100%; background: transparent; color: var(--cream-dim); border: 1px solid var(--border-light); border-radius: 10px; padding: 0.72rem; font-family: var(--sans); font-size: 0.82rem; cursor: pointer; margin-top: 7px; transition: border-color 0.2s, color 0.2s; }
+.btn-sec:hover { border-color: var(--cream-faint); color: var(--cream); }
+.nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 0.9rem; }
+.back-lnk { font-size: 0.75rem; color: var(--cream-faint); cursor: pointer; background: none; border: none; font-family: var(--sans); transition: color 0.2s; }
+.back-lnk:hover { color: var(--cream-dim); }
+.step-tag { font-size: 0.6rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cream-faint); }
+
+.welcome-center { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; }
+.w-logo { font-family: var(--serif); font-size: 2rem; font-weight: 500; margin-bottom: 0.5rem; }
+.w-logo span { color: var(--amber); }
+.w-tag { font-size: 0.85rem; color: var(--cream-dim); font-weight: 300; line-height: 1.6; max-width: 22ch; margin-bottom: 1.5rem; }
+.w-feat { display: flex; align-items: center; gap: 7px; margin: 4px 0; text-align: left; }
+.w-feat-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--amber); flex-shrink: 0; }
+.w-feat-txt { font-size: 0.76rem; color: var(--cream-dim); font-weight: 300; }
+
+.controls { display: flex; gap: 12px; margin-top: 1.4rem; align-items: center; }
+.cbtn { background: var(--bg2); border: 1px solid var(--border-light); border-radius: 8px; padding: 0.55rem 1.2rem; font-family: var(--sans); font-size: 0.8rem; color: var(--cream-dim); cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+.cbtn:hover { border-color: var(--cream-faint); color: var(--cream); }
+.cbtn.fwd { background: var(--amber); border-color: var(--amber); color: var(--bg); font-weight: 500; }
+.cbtn.fwd:hover { background: var(--amber-light); }
+.counter { font-size: 0.76rem; color: var(--cream-faint); min-width: 44px; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="stage-title">RizzCraft — Onboarding flow</div>
+<div class="stage-sub">Click through all 6 screens · Interactive prototype</div>
+
+<div class="progress-bar" id="pb">
+  <div class="pdot active" id="p0"></div>
+  <div class="pdot" id="p1"></div>
+  <div class="pdot" id="p2"></div>
+  <div class="pdot" id="p3"></div>
+  <div class="pdot" id="p4"></div>
+  <div class="pdot" id="p5"></div>
+</div>
+
+<div class="phone">
+  <div class="notch-row"><div class="notch"></div></div>
+
+  <div class="screen active" id="s0">
+    <div class="welcome-center">
+      <div class="w-logo">Rizz<span>Craft</span></div>
+      <div class="w-tag">Text like the version of you that always knows what to say.</div>
+      <div style="margin-bottom:1.25rem">
+        <div class="w-feat"><span class="w-feat-dot"></span><span class="w-feat-txt">Replies that sound like you, just sharper</span></div>
+        <div class="w-feat"><span class="w-feat-dot"></span><span class="w-feat-txt">Reads the room before it suggests anything</span></div>
+        <div class="w-feat"><span class="w-feat-dot"></span><span class="w-feat-txt">Works on any dating app or messenger</span></div>
+        <div class="w-feat"><span class="w-feat-dot"></span><span class="w-feat-txt">3 free replies a day, no credit card</span></div>
+      </div>
+    </div>
+    <button class="btn-main" onclick="go(1)">Get started</button>
+    <button class="btn-sec" onclick="go(1)">Already have an account? Sign in</button>
+  </div>
+
+  <div class="screen" id="s1">
+    <div class="eyebrow">Step 1 of 4</div>
+    <div class="heading">How do you want to <em>add the chat?</em></div>
+    <div class="body-text">We need to see the conversation so we can read the vibe before suggesting anything.</div>
+    <div class="opt" id="op-paste" onclick="pickInput('paste')">
+      <div class="opt-ic">✎</div>
+      <div><div class="opt-lbl">Paste the conversation</div><div class="opt-sub">Copy and paste from any app</div></div>
+    </div>
+    <div class="opt" id="op-shot" onclick="pickInput('shot')">
+      <div class="opt-ic">⊡</div>
+      <div><div class="opt-lbl">Upload a screenshot</div><div class="opt-sub">iMessage, WhatsApp, Hinge, Bumble…</div></div>
+    </div>
+    <button class="btn-main" id="b1" onclick="handleInput()" disabled style="margin-top:auto">Continue</button>
+    <div class="nav-row"><button class="back-lnk" onclick="go(0)">← Back</button><span class="step-tag">Screen 2 of 6</span></div>
+  </div>
+
+  <div class="screen" id="s2a">
+    <div class="eyebrow">Add the conversation</div>
+    <div class="heading">Paste it <em>here.</em></div>
+    <div class="inp-label">Their messages and yours</div>
+    <div class="mock-input">Her: haha ok you clearly haven't tried the jollof at that place on Kimathi<br><br>Me: haha yeah maybe<br><br>Her: no seriously, you're missing out. it's a vibe</div>
+    <div class="inp-label">Context (optional)</div>
+    <div class="mock-input" style="min-height:54px;font-style:italic">Met at a house party last weekend. Texting 3 days...</div>
+    <button class="btn-main" onclick="go(3)">Analyse the vibe</button>
+    <div class="nav-row"><button class="back-lnk" onclick="go(1)">← Back</button><span class="step-tag">Screen 3 of 6</span></div>
+  </div>
+
+  <div class="screen" id="s2b">
+    <div class="eyebrow">Add the conversation</div>
+    <div class="heading">Upload a <em>screenshot.</em></div>
+    <div class="upload-zone" onclick="go(3)">
+      <div style="font-size:1.4rem;color:var(--amber-dim);margin-bottom:6px">⊡</div>
+      <div class="upload-txt">Tap to choose a screenshot</div>
+      <div class="upload-sub">iMessage · WhatsApp · Hinge · Bumble · Instagram</div>
+    </div>
+    <div class="or-div"><span>or add context</span></div>
+    <div class="inp-label" style="margin-top:6px">Notes (optional)</div>
+    <div class="mock-input" style="min-height:56px;font-style:italic">Met on Hinge a week ago. She was replying fast until today...</div>
+    <button class="btn-main" onclick="go(3)">Analyse the vibe</button>
+    <div class="nav-row"><button class="back-lnk" onclick="go(1)">← Back</button><span class="step-tag">Screen 3 of 6</span></div>
+  </div>
+
+  <div class="screen" id="s3">
+    <div class="eyebrow">Step 2 of 4</div>
+    <div class="heading">What are you <em>going for?</em></div>
+    <div class="opt" id="og-reply" onclick="pickGoal('og-reply')"><div class="opt-ic">↩</div><div><div class="opt-lbl">Keep the conversation going</div><div class="opt-sub">A natural, engaging reply</div></div></div>
+    <div class="opt" id="og-flirt" onclick="pickGoal('og-flirt')"><div class="opt-ic">◈</div><div><div class="opt-lbl">Turn up the charm</div><div class="opt-sub">Playful, flirty energy</div></div></div>
+    <div class="opt" id="og-ask"   onclick="pickGoal('og-ask')"><div class="opt-ic">◎</div><div><div class="opt-lbl">Ask them out</div><div class="opt-sub">Smooth, low-pressure</div></div></div>
+    <div class="opt" id="og-rev"   onclick="pickGoal('og-rev')"><div class="opt-ic">⟳</div><div><div class="opt-lbl">Revive a cold chat</div><div class="opt-sub">Re-spark without being desperate</div></div></div>
+    <button class="btn-main" id="b3" onclick="go(4)" disabled style="margin-top:auto">Pick tone next</button>
+    <div class="nav-row"><button class="back-lnk" onclick="go(2)">← Back</button><span class="step-tag">Screen 4 of 6</span></div>
+  </div>
+
+  <div class="screen" id="s4">
+    <div class="eyebrow">Step 3 of 4</div>
+    <div class="heading">Pick the <em>energy.</em></div>
+    <div class="body-text">This shapes how the replies feel — not how they sound. You'll still sound like you.</div>
+    <div class="tone-grid">
+      <div class="tchip" id="t-cas" onclick="pickTone('t-cas')"><div class="tchip-name">Casual</div><div class="tchip-desc">Easy, relaxed, no pressure</div></div>
+      <div class="tchip" id="t-wit" onclick="pickTone('t-wit')"><div class="tchip-name">Witty</div><div class="tchip-desc">Sharp, a bit playful</div></div>
+      <div class="tchip" id="t-cha" onclick="pickTone('t-cha')"><div class="tchip-name">Charming</div><div class="tchip-desc">Warm, smooth, confident</div></div>
+      <div class="tchip" id="t-bol" onclick="pickTone('t-bol')"><div class="tchip-name">Bold</div><div class="tchip-desc">Direct, a little daring</div></div>
+      <div class="tchip" id="t-rom" onclick="pickTone('t-rom')"><div class="tchip-name">Romantic</div><div class="tchip-desc">Genuine, heartfelt</div></div>
+    </div>
+    <button class="btn-main" id="b4" onclick="go(5)" disabled style="margin-top:1rem">Craft my replies</button>
+    <div class="nav-row"><button class="back-lnk" onclick="go(3)">← Back</button><span class="step-tag">Screen 5 of 6</span></div>
+  </div>
+
+  <div class="screen" id="s5">
+    <div class="eyebrow">Here are your replies</div>
+    <div class="heading" style="margin-bottom:0.75rem">Reading the <em>vibe...</em></div>
+    <div class="vibe-bar"><span class="vdot"></span><span class="vtext"><strong>She's engaged.</strong> Matching your energy. Match it — don't hold back.</span></div>
+    <div class="reply-card top">
+      <div class="reply-badge">Best pick</div>
+      <div class="reply-txt">Bold claim. I'm going to need evidence — Friday?</div>
+      <div class="reply-meta"><span class="rtag">Witty</span><span class="rtag">Asks out</span><span class="rcopy">Copy</span></div>
+    </div>
+    <div class="reply-card">
+      <div class="reply-txt">Jollof challenge accepted. Where and when?</div>
+      <div class="reply-meta"><span class="rtag">Casual</span><span class="rtag">Playful</span><span class="rcopy">Copy</span></div>
+    </div>
+    <div class="reply-card">
+      <div class="reply-txt">Alright, you've talked me into it. But only if you're my guide for the night.</div>
+      <div class="reply-meta"><span class="rtag">Charming</span><span class="rtag">Smooth</span><span class="rcopy">Copy</span></div>
+    </div>
+    <div class="refine-row">
+      <button class="refine-btn">Shorter</button>
+      <button class="refine-btn">Bolder</button>
+      <button class="refine-btn">Funnier</button>
+      <button class="refine-btn">Why it works</button>
+    </div>
+    <div class="nav-row" style="margin-top:0.8rem"><button class="back-lnk" onclick="go(4)">← Back</button><span class="step-tag">Screen 6 of 6</span></div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="cbtn" id="cb-back" onclick="navBack()">← Back</button>
+  <span class="counter" id="ctr">1 / 6</span>
+  <button class="cbtn fwd" id="cb-fwd" onclick="navFwd()">Next →</button>
+</div>
+
+<script>
+  let cur = 0;
+  const screens = ['s0','s1','s2a','s3','s4','s5'];
+
+  function go(idx, isBack) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active','back'));
+    const el = document.getElementById(screens[idx]);
+    if (isBack) el.classList.add('back');
+    el.classList.add('active');
+    cur = idx;
+    document.getElementById('ctr').textContent = (idx+1) + ' / ' + screens.length;
+    document.querySelectorAll('.pdot').forEach((d,i) => {
+      d.classList.remove('active','done');
+      if (i===idx) d.classList.add('active');
+      else if (i<idx) d.classList.add('done');
+    });
+    document.getElementById('cb-back').style.opacity = idx===0 ? '0.3' : '1';
+    document.getElementById('cb-fwd').style.opacity = idx===screens.length-1 ? '0.3' : '1';
+  }
+
+  function navFwd() { if (cur < screens.length-1) go(cur+1); }
+  function navBack() { if (cur > 0) go(cur-1, true); }
+
+  function pickInput(mode) {
+    screens[2] = mode === 'paste' ? 's2a' : 's2b';
+    document.getElementById('op-paste').classList.toggle('sel', mode==='paste');
+    document.getElementById('op-shot').classList.toggle('sel', mode==='shot');
+    document.getElementById('b1').disabled = false;
+  }
+  function handleInput() { go(2); }
+
+  function pickGoal(id) {
+    document.querySelectorAll('#s3 .opt').forEach(o => o.classList.remove('sel'));
+    document.getElementById(id).classList.add('sel');
+    document.getElementById('b3').disabled = false;
+  }
+  function pickTone(id) {
+    document.querySelectorAll('.tchip').forEach(c => c.classList.remove('sel'));
+    document.getElementById(id).classList.add('sel');
+    document.getElementById('b4').disabled = false;
+  }
+
+  go(0);
+</script>
+</body>
+</html>

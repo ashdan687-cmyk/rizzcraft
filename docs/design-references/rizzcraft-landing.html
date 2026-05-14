@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RizzCraft — Text like the version of you that always knows what to say</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d0c0b; --bg2: #141210; --bg3: #1c1a17;
+    --cream: #f0ead8; --cream-dim: #a89e87;
+    --amber: #d49c43; --amber-light: #ecbb6e; --amber-dim: #7a5520;
+    --border: rgba(212,156,67,0.15); --border-light: rgba(240,234,216,0.08);
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'DM Sans', system-ui, sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--cream); font-family: var(--sans); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 2.5rem; background: rgba(13,12,11,0.88); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-light); }
+  .nav-logo { font-family: var(--serif); font-size: 1.4rem; font-weight: 500; color: var(--cream); letter-spacing: -0.005em; }
+  .nav-logo span { color: var(--amber); }
+  .nav-links { display: flex; gap: 2rem; align-items: center; }
+  .nav-links a { font-size: 0.85rem; color: var(--cream-dim); text-decoration: none; letter-spacing: 0.04em; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--cream); }
+  .nav-cta { color: var(--bg) !important; background: var(--amber); padding: 0.5rem 1.25rem; border-radius: 4px; text-transform: none !important; letter-spacing: 0 !important; font-weight: 500 !important; transition: background 0.2s !important; }
+  .nav-cta:hover { background: var(--amber-light) !important; }
+
+  .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 8rem 2.5rem 5rem; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 70% 50%, rgba(212,156,67,0.07) 0%, transparent 70%); pointer-events: none; }
+  .hero-eyebrow { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.7s 0.1s forwards; }
+  .hero-headline { font-family: var(--serif); font-size: clamp(3rem, 7vw, 6rem); font-weight: 500; line-height: 1.05; max-width: 14ch; margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.7s 0.2s forwards; }
+  .hero-headline em { font-style: italic; color: var(--amber); }
+  .hero-sub { font-size: 1.1rem; font-weight: 300; color: var(--cream-dim); max-width: 46ch; line-height: 1.7; margin-bottom: 2.5rem; opacity: 0; animation: fadeUp 0.7s 0.3s forwards; }
+  .hero-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.7s 0.4s forwards; }
+  .hero-note { font-size: 0.78rem; color: var(--cream-dim); margin-top: 1rem; opacity: 0; animation: fadeUp 0.7s 0.5s forwards; }
+
+  .btn-primary { display: inline-block; background: var(--amber); color: var(--bg); font-family: var(--sans); font-size: 0.95rem; font-weight: 500; padding: 0.85rem 2rem; border-radius: 4px; text-decoration: none; border: none; cursor: pointer; transition: background 0.2s, transform 0.15s; }
+  .btn-primary:hover { background: var(--amber-light); transform: translateY(-1px); }
+  .btn-ghost { display: inline-block; color: var(--cream-dim); font-size: 0.9rem; font-weight: 400; text-decoration: none; border-bottom: 1px solid var(--border); padding-bottom: 2px; transition: color 0.2s, border-color 0.2s; }
+  .btn-ghost:hover { color: var(--cream); border-color: var(--cream-dim); }
+
+  .chat-demo { position: absolute; right: 5%; top: 50%; transform: translateY(-50%); width: min(340px, 38vw); opacity: 0; animation: fadeLeft 0.8s 0.6s forwards; }
+  .chat-phone { background: var(--bg2); border: 1px solid var(--border-light); border-radius: 24px; padding: 1.5rem 1rem; }
+  .chat-status { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.75rem; color: var(--cream-dim); margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-light); }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #4caf79; }
+  .bubble-row { display: flex; margin: 6px 0; }
+  .bubble-row.theirs { justify-content: flex-start; }
+  .bubble-row.mine { justify-content: flex-end; }
+  .bubble { max-width: 78%; font-size: 0.82rem; line-height: 1.45; padding: 0.55rem 0.85rem; }
+  .bubble.theirs { background: var(--bg3); color: var(--cream-dim); border-radius: 16px 16px 16px 4px; }
+  .bubble.mine { background: var(--amber-dim); color: var(--cream); border-radius: 16px 16px 4px 16px; }
+  .bubble.suggested { background: var(--amber); color: var(--bg); font-weight: 400; }
+  .suggestion-label { font-size: 0.68rem; color: var(--amber); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; text-align: right; margin: 10px 0 3px; }
+
+  .stats { border-top: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light); padding: 2rem 2.5rem; display: flex; gap: 0; flex-wrap: wrap; }
+  .stat { flex: 1; min-width: 140px; padding: 0.5rem 2rem 0.5rem 0; border-right: 1px solid var(--border-light); }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-family: var(--serif); font-size: 2.2rem; font-weight: 500; color: var(--amber); line-height: 1; margin-bottom: 0.25rem; }
+  .stat-desc { font-size: 0.82rem; color: var(--cream-dim); font-weight: 300; }
+
+  section { padding: 6rem 2.5rem; }
+  .section-label { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); margin-bottom: 1rem; }
+  .section-heading { font-family: var(--serif); font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 500; line-height: 1.1; margin-bottom: 1.25rem; max-width: 18ch; }
+  .section-heading em { font-style: italic; color: var(--amber); }
+  .section-sub { font-size: 1rem; color: var(--cream-dim); font-weight: 300; max-width: 48ch; line-height: 1.7; margin-bottom: 3rem; }
+
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1px; background: var(--border-light); border: 1px solid var(--border-light); border-radius: 8px; overflow: hidden; }
+  .step { background: var(--bg2); padding: 2rem 1.75rem; transition: background 0.2s; }
+  .step:hover { background: var(--bg3); }
+  .step-num { font-family: var(--serif); font-size: 3rem; font-weight: 400; color: var(--amber-dim); line-height: 1; margin-bottom: 1rem; }
+  .step-title { font-size: 1rem; font-weight: 500; color: var(--cream); margin-bottom: 0.5rem; }
+  .step-body { font-size: 0.88rem; color: var(--cream-dim); font-weight: 300; line-height: 1.6; }
+
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+  .feature-card { background: var(--bg2); border: 1px solid var(--border-light); border-radius: 8px; padding: 1.75rem; transition: border-color 0.25s, background 0.25s; }
+  .feature-card:hover { border-color: var(--amber-dim); background: var(--bg3); }
+  .feature-icon { width: 36px; height: 36px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; font-size: 1rem; }
+  .feature-title { font-size: 0.95rem; font-weight: 500; color: var(--cream); margin-bottom: 0.5rem; }
+  .feature-body { font-size: 0.85rem; color: var(--cream-dim); font-weight: 300; line-height: 1.6; }
+
+  .vibe-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+  .vibe-cards { display: flex; flex-direction: column; gap: 10px; }
+  .vibe-card { border-radius: 8px; padding: 1rem 1.25rem; display: flex; align-items: flex-start; gap: 12px; }
+  .vibe-card.engaged { background: rgba(76,175,121,0.08); border: 1px solid rgba(76,175,121,0.2); }
+  .vibe-card.neutral  { background: rgba(212,156,67,0.07); border: 1px solid rgba(212,156,67,0.15); }
+  .vibe-card.cold     { background: rgba(240,234,216,0.04); border: 1px solid var(--border-light); }
+  .vibe-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .vibe-dot.engaged { background: #4caf79; }
+  .vibe-dot.neutral  { background: var(--amber); }
+  .vibe-dot.cold     { background: var(--cream-dim); }
+  .vibe-text-title { font-size: 0.82rem; font-weight: 500; color: var(--cream); margin-bottom: 3px; }
+  .vibe-text-body  { font-size: 0.8rem; color: var(--cream-dim); font-weight: 300; line-height: 1.5; }
+
+  .pull-quote-section { text-align: center; padding: 6rem 2.5rem; }
+  .pull-quote { font-family: var(--serif); font-size: clamp(1.6rem, 3.5vw, 2.8rem); font-weight: 400; font-style: italic; line-height: 1.3; color: var(--cream); max-width: 24ch; margin: 0 auto 1.5rem; }
+  .pull-attr { font-size: 0.82rem; color: var(--cream-dim); letter-spacing: 0.06em; text-transform: uppercase; }
+
+  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-top: 3rem; max-width: 860px; }
+  .pricing-card { background: var(--bg2); border: 1px solid var(--border-light); border-radius: 8px; padding: 2rem; position: relative; }
+  .pricing-card.featured { border-color: var(--amber); background: var(--bg3); }
+  .pricing-badge { position: absolute; top: -1px; right: 1.5rem; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--bg); background: var(--amber); padding: 3px 12px; border-radius: 0 0 6px 6px; }
+  .pricing-name { font-size: 0.78rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cream-dim); margin-bottom: 0.75rem; }
+  .pricing-price { font-family: var(--serif); font-size: 2.8rem; font-weight: 500; color: var(--cream); line-height: 1; margin-bottom: 0.25rem; }
+  .pricing-price span { font-size: 1.1rem; font-weight: 300; color: var(--cream-dim); }
+  .pricing-desc { font-size: 0.82rem; color: var(--cream-dim); margin-bottom: 1.5rem; font-weight: 300; }
+  .pricing-features { list-style: none; margin-bottom: 1.75rem; }
+  .pricing-features li { font-size: 0.86rem; color: var(--cream-dim); padding: 0.4rem 0; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; gap: 8px; font-weight: 300; }
+  .pricing-features li::before { content: '—'; color: var(--amber); font-size: 0.75rem; }
+  .pricing-features li.included { color: var(--cream); }
+  .pricing-cta { width: 100%; padding: 0.8rem; border-radius: 4px; font-family: var(--sans); font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; }
+  .pricing-cta.primary { background: var(--amber); color: var(--bg); }
+  .pricing-cta.primary:hover { background: var(--amber-light); }
+  .pricing-cta.ghost { background: transparent; color: var(--cream-dim); border: 1px solid var(--border-light); }
+  .pricing-cta.ghost:hover { border-color: var(--cream-dim); color: var(--cream); }
+
+  footer { border-top: 1px solid var(--border-light); padding: 2rem 2.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+  .footer-logo { font-family: var(--serif); font-size: 1.1rem; color: var(--cream-dim); }
+  .footer-logo span { color: var(--amber); }
+  .footer-links { display: flex; gap: 1.5rem; }
+  .footer-links a { font-size: 0.8rem; color: var(--cream-dim); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--cream); }
+  .footer-copy { font-size: 0.78rem; color: var(--amber-dim); }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeLeft { from { opacity:0; transform:translateY(-50%) translateX(30px); } to { opacity:1; transform:translateY(-50%) translateX(0); } }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.25rem; }
+    .nav-links { display: none; }
+    .hero { padding: 7rem 1.25rem 3rem; }
+    .chat-demo { display: none; }
+    section { padding: 4rem 1.25rem; }
+    .stats { padding: 1.5rem 1.25rem; }
+    .vibe-grid { grid-template-columns: 1fr; gap: 2rem; }
+    footer { padding: 1.5rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Rizz<span>Craft</span></div>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#" class="nav-cta">Try free</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <p class="hero-eyebrow">The texting copilot</p>
+  <h1 class="hero-headline">Text like the version of you that <em>always knows</em> what to say.</h1>
+  <p class="hero-sub">Paste a conversation. RizzCraft reads the room and gives you 3–5 replies that sound like you — just sharper, wittier, and more natural.</p>
+  <div class="hero-actions">
+    <a href="#" class="btn-primary">Try it free — no sign-up needed</a>
+    <a href="#how" class="btn-ghost">See how it works</a>
+  </div>
+  <p class="hero-note">3 free replies per day. No credit card.</p>
+  <div class="chat-demo">
+    <div class="chat-phone">
+      <div class="chat-status"><span class="status-dot"></span>Reading the vibe...</div>
+      <div class="bubble-row theirs"><div class="bubble theirs">haha ok you clearly haven't tried the jollof at that place on Kimathi</div></div>
+      <div class="bubble-row mine"><div class="bubble mine" style="opacity:0.35">haha yeah maybe</div></div>
+      <div class="suggestion-label">RizzCraft suggests</div>
+      <div class="bubble-row mine"><div class="bubble mine suggested">Bold claim. I'm going to need evidence — Friday?</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="stats">
+  <div class="stat"><div class="stat-num">3–5</div><div class="stat-desc">Reply options per generation — you choose what fits</div></div>
+  <div class="stat"><div class="stat-num">&lt;10s</div><div class="stat-desc">From conversation to suggestions, every time</div></div>
+  <div class="stat"><div class="stat-num">6</div><div class="stat-desc">Goals: reply, flirt, ask out, revive, recover, open</div></div>
+  <div class="stat"><div class="stat-num">5</div><div class="stat-desc">Tones: casual, witty, charming, bold, romantic</div></div>
+</div>
+
+<section id="how">
+  <p class="section-label">How it works</p>
+  <h2 class="section-heading">From <em>blank screen</em> to confident reply in seconds.</h2>
+  <p class="section-sub">No forms. No awkward questionnaires. Just paste the chat and tell us what you're going for.</p>
+  <div class="steps">
+    <div class="step"><div class="step-num">01</div><div class="step-title">Paste or upload the conversation</div><div class="step-body">Drop in a screenshot or copy-paste the chat. RizzCraft reads the whole thread — not just the last message.</div></div>
+    <div class="step"><div class="step-num">02</div><div class="step-title">Pick your goal and tone</div><div class="step-body">A witty reply, asking them out, reviving a cold chat? Pick the energy. We'll handle the words.</div></div>
+    <div class="step"><div class="step-num">03</div><div class="step-title">Get replies that sound like you</div><div class="step-body">Three to five options, each a different flavour. Refine any of them — shorter, bolder, funnier — until it feels right.</div></div>
+    <div class="step"><div class="step-num">04</div><div class="step-title">Copy, send, done</div><div class="step-body">One tap to copy. RizzCraft's job is to hand you the words and get out of your way.</div></div>
+  </div>
+</section>
+
+<section id="features" style="background:var(--bg2);border-top:1px solid var(--border-light);border-bottom:1px solid var(--border-light);">
+  <p class="section-label">Features</p>
+  <h2 class="section-heading">Everything you need to <em>stop overthinking</em> and start texting.</h2>
+  <div class="features-grid">
+    <div class="feature-card"><div class="feature-icon">◎</div><div class="feature-title">Screenshot reading</div><div class="feature-body">Upload from iMessage, WhatsApp, Hinge, Bumble. RizzCraft reads the thread and figures out who said what.</div></div>
+    <div class="feature-card"><div class="feature-icon">◈</div><div class="feature-title">Vibe check</div><div class="feature-body">Before you reply, RizzCraft reads the room. Engaged? Neutral? Going quiet? Replies are calibrated to the actual energy.</div></div>
+    <div class="feature-card"><div class="feature-icon">◐</div><div class="feature-title">Why it works</div><div class="feature-body">Tap any reply to see what's behind it. Understanding the logic means next time, you'll know what to say yourself.</div></div>
+    <div class="feature-card"><div class="feature-icon">◑</div><div class="feature-title">Refinement layer</div><div class="feature-body">One tap to make a reply shorter, smoother, bolder, or funnier. You're always in control of how it lands.</div></div>
+    <div class="feature-card"><div class="feature-icon">◒</div><div class="feature-title">Ask them out flow</div><div class="feature-body">A dedicated mode for the highest-stakes moment — venue, timing, and a fallback if they say they're busy.</div></div>
+    <div class="feature-card"><div class="feature-icon">◓</div><div class="feature-title">Reply history</div><div class="feature-body">Save what worked. Over time, RizzCraft learns your style and what actually gets responses.</div></div>
+  </div>
+</section>
+
+<section style="background:var(--bg2);border-bottom:1px solid var(--border-light);">
+  <div class="vibe-grid">
+    <div>
+      <p class="section-label">The vibe check</p>
+      <h2 class="section-heading">It reads the room <em>first.</em></h2>
+      <p class="section-sub">Before suggesting anything, RizzCraft analyses the tone of the whole conversation — not just the last message. Replies are matched to the actual situation.</p>
+      <p style="font-size:0.85rem;color:var(--cream-dim);font-weight:300;line-height:1.7">This is the feature that makes RizzCraft feel human. No app should hand you bold flirty lines when the other person is barely responding. We don't do that.</p>
+    </div>
+    <div class="vibe-cards">
+      <div class="vibe-card engaged"><span class="vibe-dot engaged"></span><div><div class="vibe-text-title">She's engaged</div><div class="vibe-text-body">"She's matching your energy and asking follow-ups. Match it — don't hold back."</div></div></div>
+      <div class="vibe-card neutral"><span class="vibe-dot neutral"></span><div><div class="vibe-text-title">She's neutral</div><div class="vibe-text-body">"Replies are friendly but short. Keep it light — give her something easy to respond to."</div></div></div>
+      <div class="vibe-card cold"><span class="vibe-dot cold"></span><div><div class="vibe-text-title">She's gone quiet</div><div class="vibe-text-body">"She's pulling back. No pressure moves. A low-key, genuine message works best here."</div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="pull-quote-section">
+  <p class="pull-quote">"Say what you actually mean — just better."</p>
+  <p class="pull-attr">The RizzCraft promise</p>
+</section>
+
+<section id="pricing" style="border-top:1px solid var(--border-light);">
+  <p class="section-label">Pricing</p>
+  <h2 class="section-heading">Start free. Upgrade when it's <em>working.</em></h2>
+  <p class="section-sub">No pressure. The free tier is genuinely useful — upgrade when you want more.</p>
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="pricing-name">Free</div>
+      <div class="pricing-price">$0</div>
+      <div class="pricing-desc">3 reply sets per day. Always free.</div>
+      <ul class="pricing-features">
+        <li class="included">Paste conversation</li>
+        <li class="included">3 reply suggestions</li>
+        <li class="included">Vibe check</li>
+        <li>Screenshot upload</li>
+        <li>All 5 tones</li>
+        <li>Reply history</li>
+        <li>Why it works</li>
+      </ul>
+      <button class="pricing-cta ghost">Start free</button>
+    </div>
+    <div class="pricing-card featured">
+      <div class="pricing-badge">Most popular</div>
+      <div class="pricing-name">Pro</div>
+      <div class="pricing-price">$9<span>/month</span></div>
+      <div class="pricing-desc">Unlimited replies. Every feature.</div>
+      <ul class="pricing-features">
+        <li class="included">Paste conversation</li>
+        <li class="included">Unlimited reply sets</li>
+        <li class="included">Vibe check</li>
+        <li class="included">Screenshot upload</li>
+        <li class="included">All 5 tones</li>
+        <li class="included">Reply history + outcomes</li>
+        <li class="included">Why it works</li>
+      </ul>
+      <button class="pricing-cta primary">Get Pro</button>
+    </div>
+  </div>
+</section>
+
+<section style="text-align:center;border-top:1px solid var(--border-light);">
+  <p class="section-label">Ready?</p>
+  <h2 class="section-heading" style="max-width:100%;margin-left:auto;margin-right:auto;text-align:center">You already know what you <em>want</em> to say.<br>We just help you say it.</h2>
+  <div style="height:2rem"></div>
+  <a href="#" class="btn-primary" style="font-size:1rem;padding:1rem 2.5rem">Try RizzCraft free</a>
+  <p style="font-size:0.8rem;color:var(--cream-dim);margin-top:1rem;font-weight:300">No sign-up needed. 3 free replies, right now.</p>
+</section>
+
+<footer>
+  <div class="footer-logo">Rizz<span>Craft</span></div>
+  <div class="footer-links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Contact</a></div>
+  <div class="footer-copy">© 2025 RizzCraft</div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RizzCraft — Main app screens</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0d0c0b; --bg2: #141210; --bg3: #1c1a17; --bg4: #232017;
+  --cream: #f0ead8; --cream-dim: #a89e87; --cream-faint: #5a5347;
+  --amber: #d49c43; --amber-light: #ecbb6e; --amber-dim: #7a5520; --amber-faint: #3d2a10;
+  --border-light: rgba(240,234,216,0.08); --border-amber: rgba(212,156,67,0.2);
+  --green: #4caf79; --red: #d4533a;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'DM Sans', system-ui, sans-serif;
+}
+body { background: var(--bg); font-family: var(--sans); -webkit-font-smoothing: antialiased; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem 3rem; color: var(--cream); }
+.stage-title { font-family: var(--serif); font-size: 1.4rem; font-weight: 500; margin-bottom: 0.2rem; text-align: center; }
+.stage-sub { font-size: 0.8rem; color: var(--cream-dim); font-weight: 300; text-align: center; margin-bottom: 1.5rem; }
+
+.phone { width: 340px; background: var(--bg2); border: 1px solid var(--border-light); border-radius: 36px; overflow: hidden; min-height: 680px; display: flex; flex-direction: column; position: relative; }
+.status-bar { display: flex; justify-content: space-between; align-items: center; padding: 14px 24px 6px; font-size: 0.72rem; font-weight: 500; color: var(--cream-dim); }
+.status-bar .right { display: flex; gap: 5px; }
+.notch { width: 80px; height: 5px; background: var(--bg3); border-radius: 3px; margin: 0 auto; }
+
+.screen-body { flex: 1; padding: 1rem 1.1rem 5rem; overflow: hidden; position: relative; }
+.screen-content { display: none; }
+.screen-content.active { display: block; animation: fadeIn 0.25s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+.s-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+.s-greeting { font-family: var(--serif); font-size: 1.4rem; font-weight: 500; line-height: 1.15; }
+.s-greeting em { font-style: italic; color: var(--amber); }
+.s-icon-btn { width: 32px; height: 32px; border-radius: 50%; background: var(--bg3); border: 1px solid var(--border-light); display: flex; align-items: center; justify-content: center; color: var(--cream-dim); cursor: pointer; font-size: 0.85rem; transition: border-color 0.2s; }
+.s-icon-btn:hover { border-color: var(--cream-faint); color: var(--cream); }
+
+.usage-card { background: var(--bg3); border: 1px solid var(--border-light); border-radius: 12px; padding: 0.9rem 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: border-color 0.2s; }
+.usage-card:hover { border-color: var(--amber-dim); }
+.usage-ring { width: 36px; height: 36px; flex-shrink: 0; }
+.usage-text { flex: 1; }
+.usage-num { font-family: var(--serif); font-size: 1.05rem; font-weight: 500; color: var(--cream); line-height: 1; }
+.usage-num span { color: var(--cream-dim); font-size: 0.78rem; }
+.usage-sub { font-size: 0.7rem; color: var(--cream-dim); font-weight: 300; margin-top: 3px; }
+.usage-cta { font-size: 0.7rem; color: var(--amber); font-weight: 500; cursor: pointer; }
+
+.big-cta { width: 100%; background: var(--amber); color: var(--bg); border: none; border-radius: 12px; padding: 1rem; font-family: var(--sans); font-size: 0.92rem; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 1.25rem; transition: background 0.2s; }
+.big-cta:hover { background: var(--amber-light); }
+
+.section-label { font-size: 0.62rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cream-faint); margin-bottom: 0.6rem; display: flex; justify-content: space-between; align-items: center; }
+.section-label a { color: var(--amber); text-decoration: none; font-size: 0.62rem; cursor: pointer; }
+
+.convo-card { background: var(--bg3); border: 1px solid var(--border-light); border-radius: 10px; padding: 0.75rem 0.9rem; margin-bottom: 7px; cursor: pointer; transition: border-color 0.2s; }
+.convo-card:hover { border-color: var(--amber-dim); }
+.convo-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.convo-name { font-size: 0.82rem; font-weight: 500; color: var(--cream); }
+.convo-time { font-size: 0.65rem; color: var(--cream-faint); }
+.convo-preview { font-size: 0.72rem; color: var(--cream-dim); font-weight: 300; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; }
+.convo-meta { display: flex; gap: 6px; margin-top: 6px; align-items: center; }
+.convo-tag { font-size: 0.6rem; font-weight: 500; padding: 2px 6px; border-radius: 4px; }
+.convo-tag.got-reply { background: rgba(76,175,121,0.15); color: var(--green); }
+.convo-tag.no-reply { background: rgba(212,83,58,0.12); color: #e07d6a; }
+.convo-tag.pending { background: var(--amber-faint); color: var(--amber); }
+
+.history-date { font-size: 0.62rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cream-faint); margin: 0.9rem 0 0.5rem; }
+.history-date:first-child { margin-top: 0; }
+
+.filter-row { display: flex; gap: 6px; margin-bottom: 1rem; overflow-x: auto; padding-bottom: 4px; }
+.filter-row::-webkit-scrollbar { display: none; }
+.fchip { font-size: 0.7rem; padding: 5px 11px; border-radius: 20px; background: var(--bg3); border: 1px solid var(--border-light); color: var(--cream-dim); cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+.fchip.active { background: var(--amber); border-color: var(--amber); color: var(--bg); font-weight: 500; }
+.fchip:hover:not(.active) { border-color: var(--cream-faint); }
+
+.settings-section { margin-bottom: 1.25rem; }
+.settings-group { background: var(--bg3); border: 1px solid var(--border-light); border-radius: 10px; overflow: hidden; }
+.set-row { padding: 0.85rem 1rem; display: flex; align-items: center; gap: 10px; cursor: pointer; border-bottom: 1px solid var(--border-light); transition: background 0.2s; }
+.set-row:last-child { border-bottom: none; }
+.set-row:hover { background: var(--bg4); }
+.set-row-icon { width: 26px; height: 26px; border-radius: 6px; background: var(--bg4); display: flex; align-items: center; justify-content: center; font-size: 0.82rem; color: var(--cream-dim); flex-shrink: 0; }
+.set-row-body { flex: 1; min-width: 0; }
+.set-row-label { font-size: 0.82rem; color: var(--cream); font-weight: 400; }
+.set-row-value { font-size: 0.7rem; color: var(--cream-faint); margin-top: 1px; }
+.set-row-arrow { color: var(--cream-faint); font-size: 0.85rem; }
+.set-row.pro-bg { background: linear-gradient(135deg, var(--amber-faint), var(--bg3)); }
+.set-row.pro-bg .set-row-icon { background: var(--amber-dim); color: var(--cream); }
+.set-row.danger .set-row-label { color: var(--red); }
+
+.profile-card { background: var(--bg3); border: 1px solid var(--border-light); border-radius: 10px; padding: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 12px; }
+.avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--amber-dim); display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 1.3rem; color: var(--cream); flex-shrink: 0; }
+.profile-name { font-size: 1rem; font-weight: 500; color: var(--cream); }
+.profile-email { font-size: 0.75rem; color: var(--cream-dim); margin-top: 2px; }
+
+.bottom-tabs { position: absolute; bottom: 0; left: 0; right: 0; height: 64px; background: var(--bg2); border-top: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-around; padding: 0 1rem 18px; padding-top: 8px; }
+.tab { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; color: var(--cream-faint); transition: color 0.2s; padding: 4px 12px; flex: 1; }
+.tab.active { color: var(--amber); }
+.tab:hover:not(.active) { color: var(--cream-dim); }
+.tab-icon { font-size: 1.1rem; line-height: 1; }
+.tab-label { font-size: 0.65rem; font-weight: 500; }
+
+.modal-overlay { position: absolute; inset: 0; background: rgba(13,12,11,0.85); backdrop-filter: blur(6px); display: none; align-items: flex-end; justify-content: center; z-index: 10; padding: 1.25rem; }
+.modal-overlay.active { display: flex; animation: fadeIn 0.25s ease; }
+.modal-content { width: 100%; background: var(--bg2); border: 1px solid var(--border-light); border-radius: 18px; padding: 1.25rem; max-height: 92%; overflow-y: auto; animation: slideUp 0.3s ease; }
+.modal-content::-webkit-scrollbar { display: none; }
+@keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.modal-close { position: absolute; top: 16px; right: 16px; width: 30px; height: 30px; border-radius: 50%; background: var(--bg3); border: none; color: var(--cream-dim); cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; }
+.modal-close:hover { color: var(--cream); }
+
+.paywall-header { text-align: center; padding: 0.5rem 0 1rem; }
+.paywall-icon { width: 56px; height: 56px; border-radius: 14px; background: var(--amber-faint); border: 1px solid var(--amber-dim); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; font-size: 1.6rem; color: var(--amber); }
+.paywall-title { font-family: var(--serif); font-size: 1.4rem; font-weight: 500; line-height: 1.2; margin-bottom: 0.4rem; }
+.paywall-title em { font-style: italic; color: var(--amber); }
+.paywall-sub { font-size: 0.78rem; color: var(--cream-dim); font-weight: 300; line-height: 1.55; max-width: 26ch; margin: 0 auto; }
+.benefit-list { background: var(--bg3); border: 1px solid var(--border-light); border-radius: 10px; padding: 0.75rem 0; margin: 1rem 0; }
+.benefit-row { display: flex; align-items: center; gap: 10px; padding: 0.45rem 1rem; }
+.benefit-check { width: 18px; height: 18px; border-radius: 50%; background: var(--amber-faint); color: var(--amber); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; flex-shrink: 0; }
+.benefit-text { font-size: 0.78rem; color: var(--cream); font-weight: 400; }
+.price-row { text-align: center; margin: 1rem 0; }
+.price-num { font-family: var(--serif); font-size: 2.2rem; font-weight: 500; color: var(--cream); line-height: 1; }
+.price-num span { font-size: 1rem; color: var(--cream-dim); font-weight: 300; }
+.price-trial { font-size: 0.72rem; color: var(--amber); font-weight: 500; margin-top: 4px; }
+.btn-main-pro { width: 100%; background: var(--amber); color: var(--bg); border: none; border-radius: 10px; padding: 0.9rem; font-family: var(--sans); font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+.btn-main-pro:hover { background: var(--amber-light); }
+.btn-tomorrow { width: 100%; background: transparent; color: var(--cream-dim); border: 1px solid var(--border-light); border-radius: 10px; padding: 0.78rem; font-family: var(--sans); font-size: 0.82rem; cursor: pointer; margin-top: 8px; transition: border-color 0.2s, color 0.2s; }
+.btn-tomorrow:hover { border-color: var(--cream-faint); color: var(--cream); }
+.fine-print { font-size: 0.65rem; color: var(--cream-faint); text-align: center; margin-top: 0.6rem; line-height: 1.5; }
+
+.why-reply { background: var(--amber-faint); border: 1px solid var(--amber-dim); border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 1rem; }
+.why-reply-label { font-size: 0.62rem; color: var(--amber); font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+.why-reply-text { font-size: 0.86rem; color: var(--cream); line-height: 1.5; font-weight: 400; }
+.why-list-title { font-family: var(--serif); font-size: 1.2rem; font-weight: 500; margin-bottom: 0.5rem; line-height: 1.2; }
+.why-list-title em { font-style: italic; color: var(--amber); }
+.why-list-sub { font-size: 0.75rem; color: var(--cream-dim); font-weight: 300; margin-bottom: 1rem; line-height: 1.55; }
+.why-reason { display: flex; gap: 10px; padding: 0.65rem 0; border-bottom: 1px solid var(--border-light); }
+.why-reason:last-child { border-bottom: none; }
+.why-num { width: 22px; height: 22px; border-radius: 50%; background: var(--bg3); border: 1px solid var(--amber-dim); color: var(--amber); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 500; flex-shrink: 0; }
+.why-reason-body { flex: 1; }
+.why-reason-title { font-size: 0.82rem; font-weight: 500; color: var(--cream); margin-bottom: 2px; }
+.why-reason-text { font-size: 0.74rem; color: var(--cream-dim); font-weight: 300; line-height: 1.5; }
+
+.empty-state { text-align: center; padding: 2.5rem 1rem; }
+.empty-icon { font-size: 1.8rem; color: var(--cream-faint); margin-bottom: 0.6rem; }
+.empty-title { font-size: 0.92rem; font-weight: 500; color: var(--cream); margin-bottom: 0.3rem; }
+.empty-text { font-size: 0.75rem; color: var(--cream-dim); font-weight: 300; line-height: 1.55; max-width: 28ch; margin: 0 auto; }
+
+.controls { display: flex; gap: 8px; margin-top: 1.4rem; flex-wrap: wrap; justify-content: center; max-width: 340px; }
+.cbtn { background: var(--bg2); border: 1px solid var(--border-light); border-radius: 8px; padding: 0.5rem 0.95rem; font-family: var(--sans); font-size: 0.74rem; color: var(--cream-dim); cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+.cbtn:hover { border-color: var(--cream-faint); color: var(--cream); }
+.cbtn.active { background: var(--amber); border-color: var(--amber); color: var(--bg); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<div class="stage-title">RizzCraft — main app screens</div>
+<div class="stage-sub">Home · History · Settings · Paywall · Why it works</div>
+
+<div class="phone">
+  <div class="status-bar">
+    <span>9:41</span>
+    <div class="right">
+      <span>●●●</span>
+      <span>5G</span>
+      <span>●</span>
+    </div>
+  </div>
+
+  <div class="screen-body">
+
+    <!-- HOME -->
+    <div class="screen-content active" id="sc-home">
+      <div class="s-header">
+        <div class="s-greeting">Hey<br><em>Jake.</em></div>
+        <div class="s-icon-btn" onclick="show('paywall')" title="Daily usage">⊙</div>
+      </div>
+
+      <div class="usage-card" onclick="show('paywall')">
+        <svg class="usage-ring" viewBox="0 0 36 36">
+          <circle cx="18" cy="18" r="14" fill="none" stroke="#3d2a10" stroke-width="3"/>
+          <circle cx="18" cy="18" r="14" fill="none" stroke="#d49c43" stroke-width="3" stroke-dasharray="29.3 87.9" stroke-linecap="round" transform="rotate(-90 18 18)"/>
+        </svg>
+        <div class="usage-text">
+          <div class="usage-num">1 <span>of 3 replies left today</span></div>
+          <div class="usage-sub">Resets at midnight</div>
+        </div>
+        <span class="usage-cta">Go Pro →</span>
+      </div>
+
+      <button class="big-cta" onclick="alert('Would open onboarding flow')">
+        <span style="font-size:1.1rem">+</span> New conversation
+      </button>
+
+      <div class="section-label">Recent <a onclick="switchTab('history')">See all →</a></div>
+
+      <div class="convo-card" onclick="showHomeReplyDetail()">
+        <div class="convo-top">
+          <div class="convo-name">Amara · Hinge</div>
+          <div class="convo-time">2h ago</div>
+        </div>
+        <div class="convo-preview">"Bold claim. I'm going to need evidence — Friday?"</div>
+        <div class="convo-meta">
+          <span class="convo-tag got-reply">Got a reply</span>
+          <span class="convo-tag pending">Asking out</span>
+        </div>
+      </div>
+
+      <div class="convo-card">
+        <div class="convo-top">
+          <div class="convo-name">Zara · WhatsApp</div>
+          <div class="convo-time">Yesterday</div>
+        </div>
+        <div class="convo-preview">"Alright, you've talked me into it — but only if you're my guide."</div>
+        <div class="convo-meta">
+          <span class="convo-tag got-reply">Got a reply</span>
+          <span class="convo-tag pending">Charming</span>
+        </div>
+      </div>
+
+      <div class="convo-card">
+        <div class="convo-top">
+          <div class="convo-name">Lena · Bumble</div>
+          <div class="convo-time">3 days ago</div>
+        </div>
+        <div class="convo-preview">"hope your week's been treating you better than mine has 😄"</div>
+        <div class="convo-meta">
+          <span class="convo-tag no-reply">Awaiting reply</span>
+          <span class="convo-tag pending">Revive</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="screen-content" id="sc-history">
+      <div class="s-header">
+        <div class="s-greeting">Your<br><em>history.</em></div>
+        <div class="s-icon-btn">⌕</div>
+      </div>
+
+      <div class="filter-row">
+        <div class="fchip active">All</div>
+        <div class="fchip">Got a reply</div>
+        <div class="fchip">Awaiting</div>
+        <div class="fchip">Saved</div>
+        <div class="fchip">Cold chats</div>
+      </div>
+
+      <div class="history-date">Today</div>
+      <div class="convo-card">
+        <div class="convo-top"><div class="convo-name">Amara · Hinge</div><div class="convo-time">2h ago</div></div>
+        <div class="convo-preview">"Bold claim. I'm going to need evidence — Friday?"</div>
+        <div class="convo-meta"><span class="convo-tag got-reply">Got a reply</span><span class="convo-tag pending">Asking out</span></div>
+      </div>
+
+      <div class="history-date">Yesterday</div>
+      <div class="convo-card">
+        <div class="convo-top"><div class="convo-name">Zara · WhatsApp</div><div class="convo-time">9:14 PM</div></div>
+        <div class="convo-preview">"Alright, you've talked me into it — but only if you're my guide."</div>
+        <div class="convo-meta"><span class="convo-tag got-reply">Got a reply</span><span class="convo-tag pending">Charming</span></div>
+      </div>
+      <div class="convo-card">
+        <div class="convo-top"><div class="convo-name">Maya · Instagram</div><div class="convo-time">3:22 PM</div></div>
+        <div class="convo-preview">"Jollof challenge accepted. Where and when?"</div>
+        <div class="convo-meta"><span class="convo-tag got-reply">Got a reply</span><span class="convo-tag pending">Casual</span></div>
+      </div>
+
+      <div class="history-date">This week</div>
+      <div class="convo-card">
+        <div class="convo-top"><div class="convo-name">Lena · Bumble</div><div class="convo-time">Mon</div></div>
+        <div class="convo-preview">"hope your week's been treating you better than mine has 😄"</div>
+        <div class="convo-meta"><span class="convo-tag no-reply">Awaiting reply</span><span class="convo-tag pending">Revive</span></div>
+      </div>
+      <div class="convo-card">
+        <div class="convo-top"><div class="convo-name">Nia · iMessage</div><div class="convo-time">Sun</div></div>
+        <div class="convo-preview">"thursday works — pick the place since you talk such a big game"</div>
+        <div class="convo-meta"><span class="convo-tag got-reply">Got a reply</span><span class="convo-tag pending">Witty</span></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="screen-content" id="sc-settings">
+      <div class="s-header">
+        <div class="s-greeting">Settings</div>
+        <div class="s-icon-btn">?</div>
+      </div>
+
+      <div class="profile-card">
+        <div class="avatar">J</div>
+        <div>
+          <div class="profile-name">Jake Mwangi</div>
+          <div class="profile-email">jake@example.com</div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="section-label">Account</div>
+        <div class="settings-group">
+          <div class="set-row pro-bg" onclick="show('paywall')">
+            <div class="set-row-icon">★</div>
+            <div class="set-row-body">
+              <div class="set-row-label">Upgrade to Pro</div>
+              <div class="set-row-value">Unlimited replies + every feature</div>
+            </div>
+            <div class="set-row-arrow">›</div>
+          </div>
+          <div class="set-row">
+            <div class="set-row-icon">◐</div>
+            <div class="set-row-body"><div class="set-row-label">Texting style</div><div class="set-row-value">Help us sound like you</div></div>
+            <div class="set-row-arrow">›</div>
+          </div>
+          <div class="set-row">
+            <div class="set-row-icon">✎</div>
+            <div class="set-row-body"><div class="set-row-label">Edit profile</div></div>
+            <div class="set-row-arrow">›</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="section-label">App</div>
+        <div class="settings-group">
+          <div class="set-row">
+            <div class="set-row-icon">◔</div>
+            <div class="set-row-body"><div class="set-row-label">Notifications</div><div class="set-row-value">On</div></div>
+            <div class="set-row-arrow">›</div>
+          </div>
+          <div class="set-row">
+            <div class="set-row-icon">⊙</div>
+            <div class="set-row-body"><div class="set-row-label">Privacy</div><div class="set-row-value">Chats never stored</div></div>
+            <div class="set-row-arrow">›</div>
+          </div>
+          <div class="set-row">
+            <div class="set-row-icon">?</div>
+            <div class="set-row-body"><div class="set-row-label">Help &amp; support</div></div>
+            <div class="set-row-arrow">›</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-group">
+          <div class="set-row danger">
+            <div class="set-row-icon" style="color:var(--red)">↗</div>
+            <div class="set-row-body"><div class="set-row-label">Sign out</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM TABS -->
+  <div class="bottom-tabs">
+    <div class="tab active" id="tab-home" onclick="switchTab('home')">
+      <div class="tab-icon">◐</div>
+      <div class="tab-label">Home</div>
+    </div>
+    <div class="tab" id="tab-history" onclick="switchTab('history')">
+      <div class="tab-icon">≡</div>
+      <div class="tab-label">History</div>
+    </div>
+    <div class="tab" id="tab-settings" onclick="switchTab('settings')">
+      <div class="tab-icon">⊙</div>
+      <div class="tab-label">Settings</div>
+    </div>
+  </div>
+
+  <!-- PAYWALL MODAL -->
+  <div class="modal-overlay" id="modal-paywall">
+    <div class="modal-content">
+      <button class="modal-close" onclick="hide('paywall')">×</button>
+      <div class="paywall-header">
+        <div class="paywall-icon">★</div>
+        <div class="paywall-title">You've used all 3 free replies <em>today.</em></div>
+        <div class="paywall-sub">Upgrade to Pro to keep crafting — or come back tomorrow when your free replies reset.</div>
+      </div>
+      <div class="benefit-list">
+        <div class="benefit-row"><div class="benefit-check">✓</div><div class="benefit-text">Unlimited reply suggestions</div></div>
+        <div class="benefit-row"><div class="benefit-check">✓</div><div class="benefit-text">Screenshot upload — any app</div></div>
+        <div class="benefit-row"><div class="benefit-check">✓</div><div class="benefit-text">All 5 tones unlocked</div></div>
+        <div class="benefit-row"><div class="benefit-check">✓</div><div class="benefit-text">Save replies + track outcomes</div></div>
+        <div class="benefit-row"><div class="benefit-check">✓</div><div class="benefit-text">"Why it works" explanations</div></div>
+      </div>
+      <div class="price-row">
+        <div class="price-num">$9<span>/month</span></div>
+        <div class="price-trial">7-day free trial</div>
+      </div>
+      <button class="btn-main-pro">Start free trial</button>
+      <button class="btn-tomorrow" onclick="hide('paywall')">Come back tomorrow</button>
+      <div class="fine-print">Cancel anytime in Settings. No charge until trial ends.</div>
+    </div>
+  </div>
+
+  <!-- WHY IT WORKS MODAL -->
+  <div class="modal-overlay" id="modal-why">
+    <div class="modal-content">
+      <button class="modal-close" onclick="hide('why')">×</button>
+      <div style="padding-top:0.25rem">
+        <div class="why-list-title">Why this reply <em>works.</em></div>
+        <div class="why-list-sub">A quick read on the moves behind the words. Use it once, internalise it forever.</div>
+      </div>
+
+      <div class="why-reply">
+        <div class="why-reply-label">Your reply</div>
+        <div class="why-reply-text">"Bold claim. I'm going to need evidence — Friday?"</div>
+      </div>
+
+      <div class="why-reason">
+        <div class="why-num">1</div>
+        <div class="why-reason-body">
+          <div class="why-reason-title">It matches her energy</div>
+          <div class="why-reason-text">She was playful and a bit cheeky. Anything serious or eager would break the rhythm she set.</div>
+        </div>
+      </div>
+      <div class="why-reason">
+        <div class="why-num">2</div>
+        <div class="why-reason-body">
+          <div class="why-reason-title">It's specific, not generic</div>
+          <div class="why-reason-text">"Evidence" calls back her exact claim. References beat compliments — they prove you were listening.</div>
+        </div>
+      </div>
+      <div class="why-reason">
+        <div class="why-num">3</div>
+        <div class="why-reason-body">
+          <div class="why-reason-title">The ask hides inside the joke</div>
+          <div class="why-reason-text">"— Friday?" is a low-pressure invite. If she's not into it, she can sidestep without it feeling like a rejection.</div>
+        </div>
+      </div>
+      <div class="why-reason">
+        <div class="why-num">4</div>
+        <div class="why-reason-body">
+          <div class="why-reason-title">It's short</div>
+          <div class="why-reason-text">Nine words. Confident texts don't over-explain. Length signals overthinking — brevity signals ease.</div>
+        </div>
+      </div>
+
+      <button class="btn-main-pro" style="margin-top:1rem" onclick="hide('why')">Got it</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="controls">
+  <button class="cbtn active" onclick="switchTab('home',this)">Home</button>
+  <button class="cbtn" onclick="switchTab('history',this)">History</button>
+  <button class="cbtn" onclick="switchTab('settings',this)">Settings</button>
+  <button class="cbtn" onclick="show('paywall')">Paywall</button>
+  <button class="cbtn" onclick="show('why')">Why it works</button>
+</div>
+
+<script>
+function switchTab(tab, btn) {
+  document.querySelectorAll('.screen-content').forEach(s => s.classList.remove('active'));
+  document.getElementById('sc-' + tab).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (btn) {
+    document.querySelectorAll('.controls .cbtn').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+  } else {
+    document.querySelectorAll('.controls .cbtn').forEach((c, i) => {
+      c.classList.remove('active');
+      if (i < 3 && c.textContent.toLowerCase() === tab) c.classList.add('active');
+    });
+  }
+}
+function show(name) {
+  document.getElementById('modal-' + name).classList.add('active');
+}
+function hide(name) {
+  document.getElementById('modal-' + name).classList.remove('active');
+}
+function showHomeReplyDetail() {
+  show('why');
+}
+</script>
+</body>
+</html>

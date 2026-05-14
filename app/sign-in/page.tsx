@@ -1,0 +1,226 @@
+'use client'
+
+import { useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
+
+export default function SignInPage() {
+  const [email, setEmail] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [sent, setSent] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+
+    const supabase = createClient()
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/sign-in/callback`,
+      },
+    })
+
+    if (error) {
+      setError(error.message)
+      setLoading(false)
+      return
+    }
+
+    setSent(true)
+    setLoading(false)
+  }
+
+  return (
+    <main style={{
+      minHeight: '100vh',
+      background: 'var(--bg)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '2rem',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      {/* Ambient glow */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        background: 'radial-gradient(ellipse 50% 40% at 50% 50%, rgba(212,156,67,0.06) 0%, transparent 70%)',
+        pointerEvents: 'none',
+      }} />
+
+      <div style={{ width: '100%', maxWidth: '400px', position: 'relative' }}>
+        {/* Logo */}
+        <div style={{
+          fontFamily: 'var(--font-serif), Georgia, serif',
+          fontSize: '1.6rem',
+          fontWeight: 500,
+          color: 'var(--cream)',
+          letterSpacing: '-0.005em',
+          marginBottom: '3rem',
+          textAlign: 'center',
+        }}>
+          Rizz<span style={{ color: 'var(--amber)' }}>Craft</span>
+        </div>
+
+        {!sent ? (
+          <>
+            <div style={{ marginBottom: '2rem' }}>
+              <div style={{
+                fontSize: '0.72rem',
+                fontWeight: 500,
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+                color: 'var(--amber)',
+                marginBottom: '0.75rem',
+              }}>
+                Sign in
+              </div>
+              <h1 style={{
+                fontFamily: 'var(--font-serif), Georgia, serif',
+                fontSize: 'clamp(1.8rem, 4vw, 2.4rem)',
+                fontWeight: 500,
+                lineHeight: 1.1,
+                color: 'var(--cream)',
+                marginBottom: '0.75rem',
+              }}>
+                Text like the version of you<br />
+                that <em style={{ fontStyle: 'italic', color: 'var(--amber)' }}>always knows</em> what to say.
+              </h1>
+              <p style={{
+                fontSize: '0.9rem',
+                color: 'var(--cream-dim)',
+                fontWeight: 300,
+                lineHeight: 1.6,
+              }}>
+                Enter your email and we&rsquo;ll send you a magic link. No password needed.
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit}>
+              <div style={{ marginBottom: '0.75rem' }}>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  required
+                  autoFocus
+                  style={{
+                    width: '100%',
+                    background: 'var(--bg2)',
+                    border: '1px solid var(--border-light)',
+                    borderRadius: '6px',
+                    padding: '0.85rem 1rem',
+                    color: 'var(--cream)',
+                    fontSize: '0.95rem',
+                    fontFamily: 'inherit',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                    transition: 'border-color 0.2s',
+                  }}
+                  onFocus={e => { e.currentTarget.style.borderColor = 'var(--amber-dim)' }}
+                  onBlur={e => { e.currentTarget.style.borderColor = 'var(--border-light)' }}
+                />
+              </div>
+
+              {error && (
+                <p style={{
+                  fontSize: '0.82rem',
+                  color: '#e07070',
+                  marginBottom: '0.75rem',
+                }}>
+                  {error}
+                </p>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading || !email}
+                style={{
+                  width: '100%',
+                  background: loading || !email ? 'var(--amber-dim)' : 'var(--amber)',
+                  color: 'var(--bg)',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '0.85rem 1.5rem',
+                  fontSize: '0.95rem',
+                  fontWeight: 500,
+                  fontFamily: 'inherit',
+                  cursor: loading || !email ? 'not-allowed' : 'pointer',
+                  transition: 'background 0.2s',
+                }}
+              >
+                {loading ? 'Sending…' : 'Send me a magic link'}
+              </button>
+            </form>
+
+            <p style={{
+              marginTop: '1.5rem',
+              fontSize: '0.78rem',
+              color: 'var(--cream-dim)',
+              textAlign: 'center',
+              lineHeight: 1.5,
+            }}>
+              No account? Just enter your email — we&rsquo;ll create one for you.
+            </p>
+          </>
+        ) : (
+          <div style={{ textAlign: 'center' }}>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              background: 'var(--bg3)',
+              border: '1px solid var(--border)',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 1.5rem',
+              fontSize: '1.4rem',
+            }}>
+              ✉
+            </div>
+            <h2 style={{
+              fontFamily: 'var(--font-serif), Georgia, serif',
+              fontSize: '1.6rem',
+              fontWeight: 500,
+              color: 'var(--cream)',
+              marginBottom: '0.75rem',
+            }}>
+              Check your email
+            </h2>
+            <p style={{
+              fontSize: '0.9rem',
+              color: 'var(--cream-dim)',
+              fontWeight: 300,
+              lineHeight: 1.6,
+              marginBottom: '1.5rem',
+            }}>
+              We sent a magic link to <strong style={{ color: 'var(--cream)', fontWeight: 500 }}>{email}</strong>.<br />
+              Click it to sign in. It&rsquo;s good for one use.
+            </p>
+            <button
+              onClick={() => { setSent(false); setEmail('') }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--cream-dim)',
+                fontSize: '0.82rem',
+                cursor: 'pointer',
+                textDecoration: 'underline',
+                textDecorationColor: 'var(--border)',
+                padding: 0,
+              }}
+            >
+              Use a different email
+            </button>
+          </div>
+        )}
+      </div>
+    </main>
+  )
+}
