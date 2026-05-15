@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 function isValidEmail(value: string): boolean {
@@ -8,10 +9,14 @@ function isValidEmail(value: string): boolean {
 }
 
 export default function SignInPage() {
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
+  const [password, setPassword] = useState('')
+  const [passwordLoading, setPasswordLoading] = useState(false)
 
   const emailValid = useMemo(() => isValidEmail(email), [email])
 
@@ -37,6 +42,25 @@ export default function SignInPage() {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function handlePasswordSignIn(e: React.FormEvent) {
+    e.preventDefault()
+    if (!emailValid || !password) return
+    setPasswordLoading(true)
+    setError(null)
+
+    const supabase = createClient()
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) throw error
+      router.push('/home')
+      router.refresh()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
+    } finally {
+      setPasswordLoading(false)
     }
   }
 
@@ -176,6 +200,84 @@ export default function SignInPage() {
             }}>
               No account? Just enter your email — we&rsquo;ll create one for you.
             </p>
+
+            {/* Password sign-in toggle */}
+            <div style={{ marginTop: '2.5rem', textAlign: 'center' }}>
+              <button
+                type="button"
+                onClick={() => { setShowPassword(v => !v); setError(null) }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--amber)',
+                  fontSize: '0.82rem',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  padding: 0,
+                  opacity: 0.8,
+                  transition: 'opacity 0.2s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.opacity = '1' }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = '0.8' }}
+              >
+                {showPassword ? 'Use magic link instead' : 'Have a password? Sign in here'}
+              </button>
+            </div>
+
+            {/* Expandable password section */}
+            <div style={{
+              overflow: 'hidden',
+              maxHeight: showPassword ? '200px' : '0',
+              transition: 'max-height 0.3s ease',
+            }}>
+              <form onSubmit={handlePasswordSignIn} style={{ paddingTop: '1rem' }}>
+                <div style={{ marginBottom: '0.75rem' }}>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    placeholder="Password"
+                    autoComplete="current-password"
+                    style={{
+                      width: '100%',
+                      background: 'var(--bg2)',
+                      border: '1px solid var(--border-light)',
+                      borderRadius: '6px',
+                      padding: '0.85rem 1rem',
+                      color: 'var(--cream)',
+                      fontSize: '0.95rem',
+                      fontFamily: 'inherit',
+                      outline: 'none',
+                      boxSizing: 'border-box',
+                      transition: 'border-color 0.2s',
+                    }}
+                    onFocus={e => { e.currentTarget.style.borderColor = 'var(--amber-dim)' }}
+                    onBlur={e => { e.currentTarget.style.borderColor = 'var(--border-light)' }}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={!emailValid || !password}
+                  style={{
+                    width: '100%',
+                    background: 'var(--amber)',
+                    color: 'var(--bg)',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '0.85rem 1.5rem',
+                    fontSize: '0.95rem',
+                    fontWeight: 500,
+                    fontFamily: 'inherit',
+                    cursor: emailValid && password ? 'pointer' : 'not-allowed',
+                    opacity: emailValid && password ? 1 : 0.65,
+                    transition: 'opacity 0.2s',
+                  }}
+                >
+                  {passwordLoading ? 'Signing in…' : 'Sign in'}
+                </button>
+              </form>
+            </div>
           </>
         ) : (
           <div style={{ textAlign: 'center' }}>
